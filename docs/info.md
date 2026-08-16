@@ -9,12 +9,12 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+A 32-bit RISC-V SoC uses an APB interface to communicate with integrated UART, PWM, and Timer peripherals.
 
 ## How to test
 
-Explain how to use your project
+Run the processor and observe the byte-selected 32-bit peripheral read data and generated PWM/Timer waveforms through the Tiny Tapeout I/O pins.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+No external hardware is required; an oscilloscope or logic analyzer can optionally be used to observe the outputs.
