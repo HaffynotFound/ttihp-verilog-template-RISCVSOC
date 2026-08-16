@@ -1,43 +1,81 @@
 # Makefile
 # See https://docs.cocotb.org/en/stable/quickstart.html for more info
 
-# defaults
 SIM ?= icarus
-FST ?= -fst # Use more efficient FST format
+FST ?= -fst
 TOPLEVEL_LANG ?= verilog
+
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = project.v
+
+PROJECT_SOURCES = \
+    adder.sv \
+    alu.sv \
+    alu_decoder.sv \
+    apb_master.sv \
+    apb_slave_pwm.sv \
+    apb_slave_timer.sv \
+    apb_slave_uart.sv \
+    baud_rate.sv \
+    bridge.sv \
+    control_logic.sv \
+    controller.sv \
+    core.sv \
+    d_ff.sv \
+    datapath.sv \
+    decoder_logic.sv \
+    deserializer.sv \
+    dmem.sv \
+    extender.sv \
+    fifo.sv \
+    fifo_master.sv \
+    imem.sv \
+    main_decoder.sv \
+    master.sv \
+    mux_2.sv \
+    mux_3.sv \
+    normal.sv \
+    pwm.sv \
+    register_file.sv \
+    serializer.sv \
+    square.sv \
+    timer.sv \
+    top.sv \
+    uart_rx.sv \
+    uart_soc.sv \
+    uart_tx.sv \
+    project.sv
 
 ifneq ($(GATES),yes)
 
-# RTL simulation:
-SIM_BUILD				= sim_build/rtl
+SIM_BUILD = sim_build/rtl
+
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
+
+COMPILE_ARGS += -g2012
 
 else
 
-# Gate level simulation:
-SIM_BUILD				= sim_build/gl
-COMPILE_ARGS    += -DGL_TEST
-COMPILE_ARGS    += -DFUNCTIONAL
-COMPILE_ARGS    += -DSIM
-VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
-VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+SIM_BUILD = sim_build/gl
 
-# this gets copied in by the GDS action workflow
+COMPILE_ARGS += -DGL_TEST
+COMPILE_ARGS += -DFUNCTIONAL
+COMPILE_ARGS += -DUSE_POWER_PINS
+COMPILE_ARGS += -DSIM
+COMPILE_ARGS += -DUNIT_DELAY=\#1
+
+VERILOG_SOURCES += $(PDK_ROOT)/sky130A/libs.ref/sky130_fd_sc_hd/verilog/primitives.v
+VERILOG_SOURCES += $(PDK_ROOT)/sky130A/libs.ref/sky130_fd_sc_hd/verilog/sky130_fd_sc_hd.v
+
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 
 endif
 
-# Allow sharing configuration between design and testbench via `include`:
-COMPILE_ARGS 		+= -I$(SRC_DIR)
+COMPILE_ARGS += -I$(SRC_DIR)
 
-# Include the testbench sources:
 VERILOG_SOURCES += $(PWD)/tb.v
+
 TOPLEVEL = tb
 
-# List test modules to run, separated by commas and without the .py suffix:
 COCOTB_TEST_MODULES = test
 
-# include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
