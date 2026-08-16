@@ -27,7 +27,7 @@ module dmem(
     input logic mem_write,
     output logic [31:0] out
     );
-    logic [31:0] ram[63:0];
+    logic [31:0] ram[31:0];
     assign out=ram[a[31:2]];
     always_ff @(posedge clk)
         if(mem_write)
